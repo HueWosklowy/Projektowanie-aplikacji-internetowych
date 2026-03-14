@@ -194,3 +194,51 @@ format danych (Line Protocol)
 przykładowe wpisy w bazie
 opis zapytań Flux użytych do analizy danych
 opis reguł alertowych
+7. Alerty i obsługa webhooków
+konfiguracja webhooka w InfluxDB
+przykładowy payload alertu
+opis logiki obsługi alertu w aplikacji webowej
+opis integracji z SignalR
+przykład wiadomości wysyłanej do UI
+8. Aplikacja webowa – wizualizacja i notyfikacje
+opis działania SignalR
+opis mechanizmu powiadomień w czasie rzeczywistym
+zrzuty ekranu z działania aplikacji
+opis sposobu prezentacji alertów
+9. Testy – jednostkowe, integracyjne i wydajnościowe
+opis testów jednostkowych
+opis testów integracyjnych (API → MQ → Worker → DB)
+scenariusz testów JMeter
+wyniki testów (wykresy, statystyki, analiza)
+wnioski dotyczące wydajności i stabilności systemu
+10. Aspekty bezpieczeństwa
+opis walidacji danych
+opis zabezpieczenia integralności (checksum)
+identyfikacja potencjalnych zagrożeń
+opis sposobów minimalizacji ryzyka
+refleksja dotycząca etyki i jakości kodu
+11. Praca zespołowa i organizacja projektu
+podział ról w zespole
+opis odpowiedzialności członków
+opis procesu pracy (Git flow, code review)
+samoocena i ocena współpracy
+wnioski dotyczące pracy zespołowej
+12. Podsumowanie i wnioski końcowe
+co działa dobrze
+co można poprawić
+czego zespół się nauczył
+jakie technologie warto rozwijać dalej
+13. Załączniki
+link do repozytorium GitHub
+instrukcja uruchomienia projektu
+pliki konfiguracyjne (np. docker-compose, .env)
+przykładowe payloady testowe
+wszystkie kody źródłowe w formie dokumentu txt
+zip z projektem
+✔ Dokumentacja musi być kompletna, spójna i przygotowana w formacie docx
+
+Wszelkie zwolnienia załatwiamy do tygodnia od rozpoczęcia zajęć.
+
+Możliwa nieobecność na 1 bloku zajęć (nie ostatnich)
+
+Na ostatnich zajęciach prezentacja projektów i wpisywanie zaliczeń
