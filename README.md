@@ -2,19 +2,29 @@
 System Telemetryczny z Kolejkowaniem, Walidacją i Notyfikacjami
 
 📘 Projekt laboratoryjny
+
 System Telemetryczny z Kolejkowaniem, Walidacją i Notyfikacjami
+
 Instrukcja dla studentów
+
 Prowadzący: Arkadiusz
 
 🎯 Cel projektu
+
 Celem projektu jest stworzenie kompletnego, odpornego na błędy systemu telemetrycznego, który:
 
 generuje i wysyła dane pomiarowe,
+
 przetwarza je asynchronicznie,
+
 waliduje integralność danych,
+
 zapisuje je do bazy czasowej (InfluxDB),
+
 generuje alerty,
+
 prezentuje powiadomienia w czasie rzeczywistym.
+
 Projekt symuluje realne środowisko IoT, w którym dane muszą być niezawodne, a architektura odporna na błędy.
 
 🧩 Architektura systemu
@@ -23,81 +33,125 @@ System składa się z trzech aplikacji oraz scenariusza testowego:
 [Front API] → [RabbitMQ] → [Worker] → [InfluxDB] → [Webhook] → [SignalR WebApp] → [UI]
 
 1️⃣ Aplikacja frontowa (API)
+
 Zadania:
 
 przyjmuje dane pomiarowe w formacie JSON, payload Base64
+
 loguje treść żądania (middleware),
+
 dekoduje Base64,
+
 wysyła wiadomości do kolejki RabbitMQ,
-obsługuje wiele kanałów publikacji.
+
+obsługuje wiele kanałów publikacji
+
 Studenci mają zrozumieć:
 
 jak działa API przyjmujące dane,
+
 jak wygląda logowanie requestów,
+
 jak działa publikacja wiadomości do kolejki.
 
 2️⃣ Aplikacja przetwarzająca (Worker)
+
 Zadania:
 
 odbiera wiadomości z kolejki,
+
 dekoduje i waliduje integralność danych,
+
 obsługuje błędy (Dead Letter Queue),
+
 zapisuje poprawne dane do InfluxDB,
+
 Studenci mają zrozumieć:
 
 jak działa konsument kolejki,
+
 czym jest dead-letter queue,
+
 jak wygląda walidacja integralności danych,
+
 jak działa zapis do bazy czasowej.
 
 3️⃣ Aplikacja webowa (SignalR) + Alert Influx
+
 Zadania:
 
 konfiguracja alertu w influx
+
 odbiera webhooki z InfluxDB,
+
 przekazuje alerty do klientów w czasie rzeczywistym,
+
 wyświetla powiadomienia w UI.
+
 Studenci mają zrozumieć:
 
 jak działa mechanizm webhooków,
+
 jak działa SignalR,
+
 jak budować prosty interfejs realtime.
 
 4️⃣ Testy wydajnościowe (JMeter)
+
 Zadania:
 
 symulacja wielu urządzeń wysyłających dane,
+
 testowanie API pod obciążeniem,
+
 analiza stabilności kolejki i workerów,
+
 generowanie raportów z testów.
+
 Scenariusz JMeter obejmuje:
 
 grupę wątków,
+
 odczyt danych z CSV,
+
 wysyłanie żądań POST do API,
+
 losowe opóźnienia (Gaussian Timer),
+
 wizualizację wyników (Table + Tree
 
 🧠 Wymagania niefunkcjonalne
+
 Odporność na błędy – system nie może się zatrzymać po błędnej wiadomości.
+
 Modularność – trzy niezależne aplikacje współpracujące przez kolejkę.
+
 Czytelność logów – każdy etap musi logować operacje.
+
 Realizm – projekt ma symulować prawdziwy system telemetryczny.
+
 Skalowalność – worker powinien obsługiwać wiele kanałów/konsumentów.
+
 Testowalność – API musi być możliwe do obciążenia JMeterem.
 
 📦 Zakres prac dla studentów
 
 🔹 1. Przygotowanie środowiska
+
 Studenci powinni:
 
 uruchomić RabbitMQ (z panelem management),
+
 uruchomić InfluxDB,
+
 skonfigurować webhook w InfluxDB,
+
 przygotować trzy aplikacje w osobnych projektach,
+
 skonfigurować routing, porty i zależności.
 
 🔹 2. Implementacja przepływu danych
+
 Studenci mają odtworzyć przepływ:
 
 Front API → RabbitMQ → Worker → InfluxDB → Webhook → SignalR → UI
@@ -105,57 +159,89 @@ Front API → RabbitMQ → Worker → InfluxDB → Webhook → SignalR → UI
 Każdy etap musi być przetestowany osobno i w całości.
 
 🔹 3. Walidacja integralności danych
+
 Studenci mają:
 
 zrozumieć ideę sumy kontrolnej,
+
 wykonać walidację po stronie konsumenta,
+
 obsłużyć przypadki błędne (DLQ),
+
 zaprezentować przykłady poprawnych i błędnych wiadomości.
 
 🔹 4. Obsługa alertów
 Studenci mają:
 
 przygotować regułę alertową w InfluxDB,
+
 odebrać webhook,
+
 przesłać alert do klientów przez SignalR,
+
 wyświetlić go w UI.
 
 🔹 5. Testy wydajnościowe (JMeter)
 Studenci mają:
 
 przygotować plik CSV z danymi wejściowymi,
+
 uruchomić test JMeter,
+
 przeanalizować wyniki (czas odpowiedzi, błędy, throughput),
+
 przygotować raport z testów.
 
 📄 Oczekiwane rezultaty
+
 Studenci powinni dostarczyć:
 
 ✔ Dokumentację:
+
 url repozytorim na publicznym githubie
+
 dokumentacje projektową (opis poniżej)
+
 wszystkie pliki (cała zawartość projektu)
+
 ✔ Działającą demonstrację:
+
 wysyłanie danych z API,
+
 odbiór i przetwarzanie w workerze,
+
 zapis do InfluxDB,
+
 generowanie alertów,
+
 realtime UI z powiadomieniami.
+
 ✔ Prezentację końcową:
+
 omówienie architektury,
+
 analiza błędów i DLQ,
+
 wnioski dotyczące niezawodności systemów rozproszonych.
+
 
 👥 Zasady pracy zespołowej
 Zespół 2–3 osoby.
+
 Każdy członek odpowiada za jedną aplikację.
+
 Wspólna integracja i testy.
+
 W prezentacji każdy omawia swoją część.
 
 📘 Dokumentacja końcowa projektu
+
 System Telemetryczny z Kolejkowaniem, Walidacją i Notyfikacjami
+
 Wymagania dotyczące zawartości dokumentacji
+
 Dokumentacja końcowa musi potwierdzać wszystkie efekty uczenia się przewidziane w sylabusie.
+
 Poniżej znajduje się pełna lista elementów, które muszą zostać uwzględnione.
 
 1. Opis architektury systemu
@@ -235,6 +321,7 @@ pliki konfiguracyjne (np. docker-compose, .env)
 przykładowe payloady testowe
 wszystkie kody źródłowe w formie dokumentu txt
 zip z projektem
+
 ✔ Dokumentacja musi być kompletna, spójna i przygotowana w formacie docx
 
 Wszelkie zwolnienia załatwiamy do tygodnia od rozpoczęcia zajęć.
