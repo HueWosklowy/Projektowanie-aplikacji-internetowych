@@ -56,3 +56,6 @@ C:\Users\student\Documents\repo\TelemetriProX_API\TelemetriProX_API\obj\Debug\ne
 C:\Users\student\Documents\repo\TelemetriProX_API\TelemetriProX_API\obj\Debug\net8.0\TelemetriProX_API.pdb
 C:\Users\student\Documents\repo\TelemetriProX_API\TelemetriProX_API\obj\Debug\net8.0\TelemetriProX_API.genruntimeconfig.cache
 C:\Users\student\Documents\repo\TelemetriProX_API\TelemetriProX_API\obj\Debug\net8.0\ref\TelemetriProX_API.dll
+C:\Users\student\Documents\repo\TelemetriProX_API\TelemetriProX_API\obj\Debug\net8.0\TelemetriProX_API.csproj.AssemblyReference.cache
+C:\Users\student\Documents\repo\TelemetriProX_API\TelemetriProX_API\bin\Debug\net8.0\RabbitMQ.Client.dll
+C:\Users\student\Documents\repo\TelemetriProX_API\TelemetriProX_API\obj\Debug\net8.0\Telemetr.3FB86974.Up2Date

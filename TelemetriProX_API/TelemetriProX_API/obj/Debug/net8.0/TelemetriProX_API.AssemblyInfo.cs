@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TelemetriProX_API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c3ef9ff57f175e4dbc74a16859d1c5ef037be286")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+17a8c14ae906157875e069a50042335b72e413dc")]
 [assembly: System.Reflection.AssemblyProductAttribute("TelemetriProX_API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TelemetriProX_API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
