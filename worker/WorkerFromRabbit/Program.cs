@@ -16,72 +16,120 @@ using RabbitMQ.Client.Events;
 public class MessageWorker : BackgroundService
 {
     private readonly ILogger<MessageWorker> _logger;
-    private readonly IConnection _rabbitConnection;
-    private readonly IModel _channel;
     private readonly InfluxDBClient _influxClient;
+    private readonly WriteApi _writeApi;
 
-    public MessageWorker(ILogger<MessageWorker> logger)
+    private IConnection? _rabbitConnection;
+    private IChannel? _channel;
+
+    public MessageWorker(ILogger<MessageWorker> logger, IConfiguration config)
     {
         _logger = logger;
-
-        // Konfiguracja RabbitMQ
-        var factory = new ConnectionFactory() { HostName = "localhost" };
-        _rabbitConnection = factory.CreateConnection();
-        _channel = _rabbitConnection.CreateModel();
-        _channel.QueueDeclare(queue: "sensor_data", durable: true, exclusive: false, autoDelete: false);
-
-        // Konfiguracja InfluxDB
+        // InfluxDB Client pozostaje bez zmian (zarządza własnym HTTP clientem)
         _influxClient = new InfluxDBClient("http://localhost:8086", "MY_TOKEN");
+
+        _writeApi = _influxClient.GetWriteApi(new WriteOptions
+        {
+            BatchSize = 100,
+            FlushInterval = 5000
+        });
+
+        _writeApi.EventHandler += (sender, eventArgs) => {
+            if (eventArgs is WriteErrorEvent error)
+                _logger.LogError(error.Exception, "InfluxDB background write error");
+        };
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    private async Task InitRabbitMQAsync(CancellationToken ct)
     {
-        var consumer = new EventingBasicConsumer(_channel);
-        consumer.Received += (model, ea) =>
+        var factory = new ConnectionFactory()
+        {
+            HostName = "localhost"
+            // DispatchConsumersAsync nie jest już potrzebne w v7+
+        };
+
+        // W wersji 7.x połączenie i kanał tworzymy asynchronicznie
+        _rabbitConnection = await factory.CreateConnectionAsync(ct);
+        _channel = await _rabbitConnection.CreateChannelAsync(cancellationToken: ct);
+
+        await _channel.QueueDeclareAsync(
+            queue: "sensor_data",
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            cancellationToken: ct);
+
+        await _channel.BasicQosAsync(0, 10, false, ct);
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await InitRabbitMQAsync(stoppingToken);
+
+        // W v7 EventingBasicConsumer obsługuje zadania (Task) domyślnie
+        var consumer = new AsyncEventingBasicConsumer(_channel!);
+
+        consumer.ReceivedAsync += async (model, ea) =>
         {
             var body = ea.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
 
-            _logger.LogInformation($"Odebrano: {message}");
-
             try
             {
-                // Logika zapisu do InfluxDB
-                SaveToInflux(message);
+                if (!double.TryParse(message, out var value))
+                    throw new FormatException("Invalid double value");
 
-                // Potwierdzenie przetworzenia (Ack)
-                _channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
+                var point = PointData
+                    .Measurement("telemetry")
+                    .Tag("device", "sensor_01")
+                    .Field("value", value)
+                    .Timestamp(DateTime.UtcNow, WritePrecision.Ns);
+
+                // WritePoint w tle (nieblokujące)
+                _writeApi.WritePoint(point, "my-bucket", "my-org");
+
+                // BasicAck jest teraz asynchroniczne
+                await _channel!.BasicAckAsync(ea.DeliveryTag, false, stoppingToken);
+            }
+            catch (FormatException)
+            {
+                _logger.LogError("Malformed message, discarding: {Msg}", message);
+                await _channel!.BasicNackAsync(ea.DeliveryTag, false, false, stoppingToken);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Błąd zapisu: {ex.Message}");
-                // Opcjonalnie: BasicNack w zależności od strategii błędów
+                _logger.LogError(ex, "Error processing message");
+                // Requeue: true w przypadku błędu systemowego
+                await _channel!.BasicNackAsync(ea.DeliveryTag, false, true, stoppingToken);
             }
         };
 
-        _channel.BasicConsume(queue: "sensor_data", autoAck: false, consumer: consumer);
-        return Task.CompletedTask;
-    }
+        await _channel!.BasicConsumeAsync(
+            queue: "sensor_data",
+            autoAck: false,
+            consumer: consumer,
+            cancellationToken: stoppingToken);
 
-    private void SaveToInflux(string data)
-    {
-        // Przykład: Parsowanie danych (załóżmy format JSON lub prosty String)
-        using (var writeApi = _influxClient.GetWriteApi())
+        // Utrzymujemy worker przy życiu do momentu otrzymania stoppingToken
+        try
         {
-            var point = PointData
-                .Measurement("telemetry")
-                .Tag("device", "sensor_01")
-                .Field("value", double.Parse(data)) // Dostosuj do swojego modelu
-                .Timestamp(DateTime.UtcNow, WritePrecision.Ns);
-
-            writeApi.WritePoint(point, "my-bucket", "my-org");
+            await Task.Delay(Timeout.Infinite, stoppingToken);
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Worker is stopping...");
         }
     }
 
     public override void Dispose()
     {
-        _rabbitConnection.Close();
-        _influxClient.Dispose();
+        _writeApi?.Dispose();
+
+        // W 7.x zamknięcie synchroniczne w Dispose jest dopuszczalne, 
+        // ale zaleca się asynchroniczne zamykanie w StopAsync
+        _channel?.Dispose();
+        _rabbitConnection?.Dispose();
+        _influxClient?.Dispose();
         base.Dispose();
     }
 }
