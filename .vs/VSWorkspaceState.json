@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\worker",
+    "\\worker\\WorkerFromRabbit"
   ],
-  "SelectedNode": "\\C:\\Users\\Patrykowy\\Source\\Repos\\TelemetriProX",
+  "SelectedNode": "\\worker\\WorkerFromRabbit\\appsettings.Development.json",
   "PreviewInSolutionExplorer": false
 }
