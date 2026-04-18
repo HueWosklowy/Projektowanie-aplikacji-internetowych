@@ -85,7 +85,13 @@ public class Worker : BackgroundService
                     .Field("value", value)
                     .Timestamp(msg.Timestamp, WritePrecision.Ns);
 
-                using var writeApi = _influxClient.GetWriteApiAsync();
+                var writeApi = _influxClient.GetWriteApiAsync();
+
+                await writeApi.WritePointAsync(
+                    point,
+                    _influxOptions.Bucket,
+                    _influxOptions.Org,
+                    stoppingToken);
 
                 await writeApi.WritePointAsync(
                     point,

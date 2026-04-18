@@ -25,13 +25,12 @@ builder.Services.AddSingleton<IConnection>(sp =>
     return factory.CreateConnectionAsync().GetAwaiter().GetResult();
 });
 
+
 builder.Services.AddSingleton(sp =>
 {
     var options = sp.GetRequiredService<IOptions<InfluxDbOptions>>().Value;
 
-    return InfluxDBClientFactory.Create(
-        options.Url,
-        options.Token.ToCharArray());
+    return new InfluxDBClient(options.Url, options.Token);
 });
 
 builder.Services.AddHostedService<Worker>();
