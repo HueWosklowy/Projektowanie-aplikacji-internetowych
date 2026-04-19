@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "THYS5W4GDns=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Patrykowy\\Source\\Repos\\TelemetriProX\\TelemetriProX-api\\TelemetriProX_API\\TelemetriProX_API\\TelemetriProX_API.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Patrykowy\\.nuget\\packages\\rabbitmq.client\\7.2.1\\rabbitmq.client.7.2.1.nupkg.sha512",
+    "C:\\Users\\Patrykowy\\.nuget\\packages\\system.io.pipelines\\8.0.0\\system.io.pipelines.8.0.0.nupkg.sha512",
+    "C:\\Users\\Patrykowy\\.nuget\\packages\\system.threading.ratelimiting\\8.0.0\\system.threading.ratelimiting.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
