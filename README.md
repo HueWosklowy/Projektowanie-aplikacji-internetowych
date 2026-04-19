@@ -1,7 +1,11 @@
 # Projektowanie-aplikacji-internetowych
 System Telemetryczny z Kolejkowaniem, Walidacją i Notyfikacjami
 
+zmiana WORKER
+
 📘 Projekt laboratoryjny
+
+
 
 System Telemetryczny z Kolejkowaniem, Walidacją i Notyfikacjami
 
