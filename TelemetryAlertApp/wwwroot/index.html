@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Temperatura i alerty</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f5f5f5;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .temp-box {
+            font-size: 40px;
+            font-weight: bold;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            color: #222;
+            border: 2px solid #ddd;
+        }
+
+        .alerts {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .alert-item {
+            padding: 12px 14px;
+            border-radius: 10px;
+            color: #222;
+            font-weight: 600;
+            border-left: 8px solid rgba(0,0,0,0.2);
+            background: #eee;
+        }
+
+        .raw {
+            font-size: 12px;
+            color: #555;
+            margin-top: 6px;
+            white-space: pre-wrap;
+            font-family: Consolas, monospace;
+        }
+
+        .time {
+            font-size: 12px;
+            color: #444;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Monitoring temperatury</h1>
+
+    <div class="card">
+        <h2>Aktualna temperatura</h2>
+        <div id="tempBox" class="temp-box" style="background: #ddd;">
+            Brak danych
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Powiadomienia</h2>
+        <div id="alerts" class="alerts"></div>
+    </div>
+
+    <script>
+        const tempBox = document.getElementById("tempBox");
+        const alerts = document.getElementById("alerts");
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/alertsHub")
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on("ReceiveTemperature", (data) => {
+            tempBox.innerText = `${data.value} °C`;
+            tempBox.style.background = toCssColor(data.color);
+        });
+
+        connection.on("ReceiveAlert", (data) => {
+            const div = document.createElement("div");
+            div.className = "alert-item";
+            div.style.background = toCssColor(data.color);
+
+            div.innerHTML = `
+                <div><strong>${escapeHtml(data.level)}</strong>: ${escapeHtml(data.message)}</div>
+                ${data.temperature !== null ? `<div>Temperatura: ${data.temperature} °C</div>` : ""}
+                <div class="time">${new Date(data.timestamp).toLocaleString()}</div>
+            `;
+
+            alerts.prepend(div);
+        });
+
+        connection.start()
+            .then(() => console.log("Połączono z SignalR"))
+            .catch(err => console.error(err));
+
+        function toCssColor(color) {
+            switch (color) {
+                case "blue": return "#0000FF";
+                case "lightblue": return "#87CEFA";
+                case "yellow": return "#FFD700";
+                case "orange": return "#FFA500";
+                case "red": return "#FF4D4F";
+                default: return "#D9D9D9";
+            }
+        }
+
+        function escapeHtml(value) {
+            if (value === null || value === undefined) return "";
+            return value
+                .toString()
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll("\"", "&quot;")
+                .replaceAll("'", "&#039;");
+        }
+    </script>
+</body>
+</html>
