@@ -1,0 +1,19 @@
+{
+  "deviceId": "test123",
+  "payloadBase64": "MjA="
+}
+
+{
+  "deviceId": "test123",
+  "payloadBase64": "MzU="
+}
+
+{
+  "deviceId": "test123",
+  "payloadBase64": "NTI="
+}
+
+{
+  "deviceId": "test123",
+  "payloadBase64": "NjA="
+}

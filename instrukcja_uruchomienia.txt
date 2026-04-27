@@ -1,0 +1,14 @@
+Instrukcja Uruchomienia:
+
+Uruchomić RabbitMQ
+Uruchomić InfluxDB
+Uruchomić skrypt API
+Przesłać dane wejściowe do API (JMeter)
+endpoint: /pomiary
+Uruchomić Worker
+
+--Poprawne dane zostaną zapisane do InfluxDB, niepoprawne trafią do deadletter que w RabbitMQ--
+
+--Webhook wysyła do aplikacji webowej ostrzeżenia--
+
+W celu wyświetlenia ostrzeżeń sprawdzić aplikację przez którą signalR wyświetla alert
